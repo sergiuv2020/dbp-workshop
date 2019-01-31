@@ -1,0 +1,28 @@
+1.
+
+open http://devcon.ps.dev.alfresco.me/digital-workspace/
+
+  [backgroundImageUrl]="'assets/images/edimburg.jpg'"
+  [showRememberMe]="false"
+  [showLoginActions]="false"
+
+docker build . -t svidrascu/devcon:new && docker push svidrascu/devcon:new
+
+modify descriptor
+http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/deployment/sergiuv/dbp-alfresco-dw?namespace=sergiuv
+
+open private http://devcon.ps.dev.alfresco.me/digital-workspace/
+
+2.
+skaffold dev
+open http://devcon.ps.dev.alfresco.me/development/
+
+<login-header><ng-template>DevCon Rulez!!</ng-template></login-header>
+
+
+3. 
+npm start
+kubectl port-forward svc/dbp-alfresco-cs-repository 8080:80 -n sergiuv
+
+kubectl port-forward dbp-alfresco-cs-repository-6b65bf49dd-55clx 8080 -n sergiuv
+telepresence --swap-deployment dbp-alfresco-dw --expose 8080:80 --method=inject-tcp npm run-script build:watch

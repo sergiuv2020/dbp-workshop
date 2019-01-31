@@ -1,0 +1,53 @@
+<adf-toolbar>
+  <adf-toolbar-title>
+    <adf-breadcrumb
+      class="files-breadcrumb"
+      root="Personal Files"
+      [target]="documentList"
+      [folderNode]="documentList.folderNode">
+    </adf-breadcrumb>
+  </adf-toolbar-title>
+
+  <div class="adf-toolbar--spacer"></div>
+
+  <adf-upload-button
+    [rootFolderId]="documentList.currentFolderId || '-root-'"
+    [adf-node-permission]="'create'"
+    (success)="uploadSuccess($event)">
+  </adf-upload-button>
+
+</adf-toolbar>
+
+<adf-document-list
+  #documentList
+  currentFolderId="-root-"
+  [contextMenuActions]="true"
+  [contentActions]="true"
+  (preview)="showPreview($event)">
+
+  <data-columns>
+    <data-column key="$thumbnail" type="image"></data-column>
+    <data-column
+        title="Name" 
+        key="name" 
+        sortable="true"
+        class="full-width ellipsis-cell">
+    </data-column>
+    <data-column
+        title="Created By" 
+        key="createdByUser.displayName"
+        sortable="true"
+        class="desktop-only">
+    </data-column>
+    <data-column
+        title="Created On" 
+        key="createdAt" 
+        type="date" 
+        format="medium"
+        sortable="true"
+        class="desktop-only">
+    </data-column>
+  </data-columns>
+</adf-document-list>
+
+<adf-file-uploading-dialog></adf-file-uploading-dialog>

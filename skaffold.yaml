@@ -1,0 +1,13 @@
+apiVersion: skaffold/v1beta3
+kind: Config
+build:
+  artifacts:
+  - image: "svidrascu/devcon"
+deploy:
+  helm:
+    releases:
+    - name: devcon-skaffold
+      chartPath: devcon
+      namespace: sergiuv
+      values:
+        imagerepository: "svidrascu/devcon"

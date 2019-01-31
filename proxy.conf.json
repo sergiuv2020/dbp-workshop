@@ -1,0 +1,7 @@
+{
+  "/alfresco": {
+    "target": "http://devcon.ps.dev.alfresco.me",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

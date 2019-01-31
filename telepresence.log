@@ -1,0 +1,268 @@
+   0.0 TEL | Telepresence 0.97 launched at Thu Jan 31 12:02:11 2019
+   0.0 TEL |   /usr/local/bin/telepresence --swap-deployment dbp-alfresco-dw --expose 8080:80 --method=inject-tcp
+   0.0 TEL | Platform: darwin
+   0.0 TEL | Python 3.7.0 (default, Oct  3 2018, 15:03:48)
+   0.0 TEL | [Clang 10.0.0 (clang-1000.10.44.2)]
+   0.0 TEL | [1] Running: uname -a
+   0.0   1 | Darwin L3700100719.ness.com 18.2.0 Darwin Kernel Version 18.2.0: Mon Nov 12 20:24:46 PST 2018; root:xnu-4903.231.4~2/RELEASE_X86_64 x86_64
+   0.0 TEL | BEGIN SPAN main.py:40(main)
+   0.0 TEL | BEGIN SPAN startup.py:74(__init__)
+   0.0 TEL | Found kubectl -> /usr/local/bin/kubectl
+   0.0 TEL | [2] Capturing: kubectl version --short
+   1.4 TEL | [2] captured in 1.35 secs.
+   1.4 TEL | [3] Capturing: kubectl config current-context
+   1.4 TEL | [4] Capturing: kubectl config view -o json
+   1.5 TEL | [5] Capturing: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev get ns sergiuv
+   2.6 TEL | [5] captured in 1.13 secs.
+   2.6 TEL | Command: kubectl 1.13.2
+   2.6 TEL | Context: arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev, namespace: sergiuv, version: 1.11.5-eks-6bad6d
+   2.6 TEL | Warning: kubectl 1.13.2 may not work correctly with cluster version 1.11.5-eks-6bad6d due to the version discrepancy. See https://kubernetes.io/docs/setup/version-skew-policy/ for more information.
+   2.6 TEL | END SPAN startup.py:74(__init__)    2.6s
+   2.6 TEL | Found ssh -> /usr/bin/ssh
+   2.6 TEL | [6] Capturing: ssh -V
+   2.7 TEL | Found bash -> /usr/local/bin/bash
+   2.7 TEL | Found torsocks -> /usr/local/bin/torsocks
+   2.7 >>> | Starting proxy with method 'inject-tcp', which has the following limitations: Go programs, static binaries, suid programs, and custom DNS implementations are not supported. For a full list of method limitations see https://telepresence.io/reference/methods.html
+   2.7 TEL | Found sshfs -> /usr/local/bin/sshfs
+   2.7 TEL | Found umount -> /sbin/umount
+   2.7 >>> | Volumes are rooted at $TELEPRESENCE_ROOT. See https://telepresence.io/howto/volumes.html for details.
+   2.7 TEL | [7] Capturing: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv get pods telepresence-connectivity-check --ignore-not-found
+   4.0 TEL | Scout info: {'latest_version': '0.97', 'application': 'telepresence', 'notices': []}
+   4.0 TEL | BEGIN SPAN deployment.py:150(supplant_deployment)
+   4.0 >>> | Starting network proxy to cluster by swapping out Deployment dbp-alfresco-dw with a proxy
+   4.0 TEL | BEGIN SPAN remote.py:78(get_deployment_json)
+   4.0 TEL | [8] Capturing: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv get deployment -o json --export dbp-alfresco-dw
+   4.8 TEL | END SPAN remote.py:78(get_deployment_json)    0.8s
+   4.8 TEL | [9] Running: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv delete deployment dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea --ignore-not-found
+   5.7 TEL | [10] Running: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv apply -f -
+   6.8  10 | deployment.extensions/dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea created
+   6.8 TEL | [10] ran in 1.11 secs.
+   6.8 TEL | [11] Running: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv scale deployment dbp-alfresco-dw --replicas=0
+   7.7  11 | deployment.extensions/dbp-alfresco-dw scaled
+   7.7 TEL | END SPAN deployment.py:150(supplant_deployment)    3.7s
+   7.7 TEL | BEGIN SPAN remote.py:154(get_remote_info)
+   7.7 TEL | BEGIN SPAN remote.py:78(get_deployment_json)
+   7.7 TEL | [12] Capturing: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv get deployment -o json --export --selector=telepresence=bf417fa624084809ba5904e42d3080ea
+   8.6 TEL | END SPAN remote.py:78(get_deployment_json)    0.9s
+   8.6 TEL | Searching for Telepresence pod:
+   8.6 TEL |   with name dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea-*
+   8.6 TEL |   with labels {'app': 'dbp-alfresco-dw', 'component': 'digitalWorkspaceApplication', 'release': 'dbp', 'telepresence': 'bf417fa624084809ba5904e42d3080ea'}
+   8.6 TEL | [13] Capturing: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv get pod -o json --export --selector=telepresence=bf417fa624084809ba5904e42d3080ea
+   9.5 TEL | Checking dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea-7fb79f8bfsgnxp
+   9.5 TEL | Looks like we've found our pod!
+   9.5 TEL | BEGIN SPAN remote.py:116(wait_for_pod)
+   9.5 TEL | [14] Capturing: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv get pod dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea-7fb79f8bfsgnxp -o json
+  10.4 TEL | END SPAN remote.py:116(wait_for_pod)    0.9s
+  10.4 TEL | END SPAN remote.py:154(get_remote_info)    2.6s
+  10.4 TEL | BEGIN SPAN connect.py:36(connect)
+  10.4 TEL | [15] Launching kubectl logs: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv logs -f dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea-7fb79f8bfsgnxp --container alfresco-digital-workspace --tail=10
+  10.4 TEL | [16] Launching kubectl port-forward: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv port-forward dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea-7fb79f8bfsgnxp 55051:8022
+  10.4 TEL | [17] Running: ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 /bin/true
+  10.4 TEL | [17] exit 255 in 0.02 secs.
+  10.6 TEL | [18] Running: ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 /bin/true
+  10.7 TEL | [18] exit 255 in 0.03 secs.
+  10.9 TEL | [19] Running: ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 /bin/true
+  10.9 TEL | [19] exit 255 in 0.03 secs.
+  11.2 TEL | [20] Running: ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 /bin/true
+  11.2 TEL | [20] exit 255 in 0.03 secs.
+  11.3  15 | 2019-01-31T12:02:15+0000 [-] Loading ./forwarder.py...
+  11.3  15 | 2019-01-31T12:02:15+0000 [-] /etc/resolv.conf changed, reparsing
+  11.3  15 | 2019-01-31T12:02:15+0000 [-] Resolver added ('10.100.0.10', 53) to server list
+  11.3  15 | 2019-01-31T12:02:15+0000 [-] SOCKSv5Factory starting on 9050
+  11.3  15 | 2019-01-31T12:02:15+0000 [socks.SOCKSv5Factory#info] Starting factory <socks.SOCKSv5Factory object at 0x7f7f04161f28>
+  11.3  15 | 2019-01-31T12:02:15+0000 [-] DNSDatagramProtocol starting on 9053
+  11.3  15 | 2019-01-31T12:02:15+0000 [-] Starting protocol <twisted.names.dns.DNSDatagramProtocol object at 0x7f7f040e7320>
+  11.3  15 | 2019-01-31T12:02:15+0000 [-] Loaded.
+  11.3  15 | 2019-01-31T12:02:15+0000 [twisted.scripts._twistd_unix.UnixAppLogger#info] twistd 18.9.0 (/usr/bin/python3.6 3.6.5) starting up.
+  11.3  15 | 2019-01-31T12:02:15+0000 [twisted.scripts._twistd_unix.UnixAppLogger#info] reactor class: twisted.internet.epollreactor.EPollReactor.
+  11.4  16 | Forwarding from 127.0.0.1:55051 -> 8022
+  11.4  16 | Forwarding from [::1]:55051 -> 8022
+  11.5 TEL | [21] Running: ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 /bin/true
+  11.5  16 | Handling connection for 55051
+  11.8 >>> | Forwarding remote port 80 to local port 8080.
+  11.8 TEL | [22] Launching SSH port forward (exposed ports): ssh -N -oServerAliveInterval=1 -oServerAliveCountMax=10 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 -R '*:80:127.0.0.1:8080'
+  11.8 >>> | 
+  11.8 TEL | Launching Web server for proxy poll
+  11.8 TEL | [23] Launching SSH port forward (socks and proxy poll): ssh -N -oServerAliveInterval=1 -oServerAliveCountMax=10 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 -L127.0.0.1:55070:127.0.0.1:9050 -R9055:127.0.0.1:55071
+  11.8 TEL | END SPAN connect.py:36(connect)    1.5s
+  11.8 TEL | BEGIN SPAN remote_env.py:28(get_remote_env)
+  11.8 TEL | [24] Capturing: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv exec dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea-7fb79f8bfsgnxp --container alfresco-digital-workspace -- python3 podinfo.py
+  11.8  16 | Handling connection for 55051
+  11.8  16 | Handling connection for 55051
+  12.9 TEL | [24] captured in 1.09 secs.
+  12.9 TEL | END SPAN remote_env.py:28(get_remote_env)    1.1s
+  12.9 TEL | BEGIN SPAN mount.py:32(mount_remote_volumes)
+  12.9 TEL | [25] Capturing: sshfs -p 55051 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null telepresence@127.0.0.1:/ /tmp/tel-7fg53i19/fs
+  13.0  16 | Handling connection for 55051
+  13.3 TEL | END SPAN mount.py:32(mount_remote_volumes)    0.4s
+  13.3 TEL | BEGIN SPAN local.py:42(set_up_torsocks)
+  13.3 TEL | [26] Running: torsocks python3 -c 'import socket; socket.socket().connect(('"'"'google.com'"'"', 80))'
+  13.6 TEL | END SPAN local.py:42(set_up_torsocks)    0.3s
+  15.5 >>> | Setup complete. Launching your command.
+  15.5 TEL | Everything launched. Waiting to exit...
+  15.5 TEL | BEGIN SPAN runner.py:586(wait_for_exit)
+  37.9 TEL | (proxy checking local liveness)
+  37.9  15 | 2019-01-31T12:02:45+0000 [Poll#info] Checkpoint
+  67.9 TEL | (proxy checking local liveness)
+  67.9  15 | 2019-01-31T12:03:15+0000 [Poll#info] Checkpoint
+  97.9 TEL | (proxy checking local liveness)
+  97.9  15 | 2019-01-31T12:03:45+0000 [Poll#info] Checkpoint
+ 127.9 TEL | (proxy checking local liveness)
+ 127.9  15 | 2019-01-31T12:04:15+0000 [Poll#info] Checkpoint
+ 157.9 TEL | (proxy checking local liveness)
+ 157.9  15 | 2019-01-31T12:04:45+0000 [Poll#info] Checkpoint
+ 187.9 TEL | (proxy checking local liveness)
+ 187.9  15 | 2019-01-31T12:05:15+0000 [Poll#info] Checkpoint
+ 217.9 TEL | (proxy checking local liveness)
+ 217.9  15 | 2019-01-31T12:05:45+0000 [Poll#info] Checkpoint
+ 248.0 TEL | (proxy checking local liveness)
+ 248.0  15 | 2019-01-31T12:06:15+0000 [Poll#info] Checkpoint
+ 277.9 TEL | (proxy checking local liveness)
+ 277.9  15 | 2019-01-31T12:06:45+0000 [Poll#info] Checkpoint
+ 307.9 TEL | (proxy checking local liveness)
+ 307.9  15 | 2019-01-31T12:07:15+0000 [Poll#info] Checkpoint
+ 337.9 TEL | (proxy checking local liveness)
+ 337.9  15 | 2019-01-31T12:07:45+0000 [Poll#info] Checkpoint
+ 367.9 TEL | (proxy checking local liveness)
+ 367.9  15 | 2019-01-31T12:08:15+0000 [Poll#info] Checkpoint
+ 397.9 TEL | (proxy checking local liveness)
+ 397.9  15 | 2019-01-31T12:08:45+0000 [Poll#info] Checkpoint
+ 427.9 TEL | (proxy checking local liveness)
+ 427.9  15 | 2019-01-31T12:09:15+0000 [Poll#info] Checkpoint
+ 457.9 TEL | (proxy checking local liveness)
+ 457.9  15 | 2019-01-31T12:09:45+0000 [Poll#info] Checkpoint
+ 487.9 TEL | (proxy checking local liveness)
+ 487.9  15 | 2019-01-31T12:10:15+0000 [Poll#info] Checkpoint
+ 518.0 TEL | (proxy checking local liveness)
+ 518.0  15 | 2019-01-31T12:10:45+0000 [Poll#info] Checkpoint
+ 547.9 TEL | (proxy checking local liveness)
+ 547.9  15 | 2019-01-31T12:11:15+0000 [Poll#info] Checkpoint
+ 577.9 TEL | (proxy checking local liveness)
+ 577.9  15 | 2019-01-31T12:11:45+0000 [Poll#info] Checkpoint
+ 607.9 TEL | (proxy checking local liveness)
+ 607.9  15 | 2019-01-31T12:12:15+0000 [Poll#info] Checkpoint
+ 637.9 TEL | (proxy checking local liveness)
+ 637.9  15 | 2019-01-31T12:12:45+0000 [Poll#info] Checkpoint
+ 667.9 TEL | (proxy checking local liveness)
+ 668.0  15 | 2019-01-31T12:13:15+0000 [Poll#info] Checkpoint
+ 697.9 TEL | (proxy checking local liveness)
+ 698.0  15 | 2019-01-31T12:13:45+0000 [Poll#info] Checkpoint
+ 727.9 TEL | (proxy checking local liveness)
+ 728.0  15 | 2019-01-31T12:14:15+0000 [Poll#info] Checkpoint
+ 757.9 TEL | (proxy checking local liveness)
+ 758.0  15 | 2019-01-31T12:14:45+0000 [Poll#info] Checkpoint
+ 787.9 TEL | (proxy checking local liveness)
+ 788.0  15 | 2019-01-31T12:15:15+0000 [Poll#info] Checkpoint
+ 817.9 TEL | (proxy checking local liveness)
+ 818.0  15 | 2019-01-31T12:15:45+0000 [Poll#info] Checkpoint
+ 847.9 TEL | (proxy checking local liveness)
+ 847.9  15 | 2019-01-31T12:16:15+0000 [Poll#info] Checkpoint
+ 877.9 TEL | (proxy checking local liveness)
+ 878.0  15 | 2019-01-31T12:16:45+0000 [Poll#info] Checkpoint
+ 907.9 TEL | (proxy checking local liveness)
+ 908.0  15 | 2019-01-31T12:17:15+0000 [Poll#info] Checkpoint
+ 937.9 TEL | (proxy checking local liveness)
+ 938.0  15 | 2019-01-31T12:17:45+0000 [Poll#info] Checkpoint
+ 967.9 TEL | (proxy checking local liveness)
+ 967.9  15 | 2019-01-31T12:18:15+0000 [Poll#info] Checkpoint
+ 997.9 TEL | (proxy checking local liveness)
+ 998.0  15 | 2019-01-31T12:18:45+0000 [Poll#info] Checkpoint
+1027.9 TEL | (proxy checking local liveness)
+1028.0  15 | 2019-01-31T12:19:15+0000 [Poll#info] Checkpoint
+1057.9 TEL | (proxy checking local liveness)
+1057.9  15 | 2019-01-31T12:19:45+0000 [Poll#info] Checkpoint
+1087.9 TEL | (proxy checking local liveness)
+1088.0  15 | 2019-01-31T12:20:15+0000 [Poll#info] Checkpoint
+1117.9 TEL | (proxy checking local liveness)
+1118.0  15 | 2019-01-31T12:20:45+0000 [Poll#info] Checkpoint
+1147.9 TEL | (proxy checking local liveness)
+1148.0  15 | 2019-01-31T12:21:15+0000 [Poll#info] Checkpoint
+1177.9 TEL | (proxy checking local liveness)
+1178.0  15 | 2019-01-31T12:21:45+0000 [Poll#info] Checkpoint
+1208.0 TEL | (proxy checking local liveness)
+1208.0  15 | 2019-01-31T12:22:15+0000 [Poll#info] Checkpoint
+1238.0 TEL | (proxy checking local liveness)
+1238.0  15 | 2019-01-31T12:22:45+0000 [Poll#info] Checkpoint
+1268.0 TEL | (proxy checking local liveness)
+1268.0  15 | 2019-01-31T12:23:15+0000 [Poll#info] Checkpoint
+1298.0 TEL | (proxy checking local liveness)
+1298.0  15 | 2019-01-31T12:23:45+0000 [Poll#info] Checkpoint
+1328.0 TEL | (proxy checking local liveness)
+1328.0  15 | 2019-01-31T12:24:15+0000 [Poll#info] Checkpoint
+1358.0 TEL | (proxy checking local liveness)
+1358.0  15 | 2019-01-31T12:24:45+0000 [Poll#info] Checkpoint
+1388.1 TEL | (proxy checking local liveness)
+1388.2  15 | 2019-01-31T12:25:15+0000 [Poll#info] Checkpoint
+1418.1 TEL | (proxy checking local liveness)
+1418.1  15 | 2019-01-31T12:25:45+0000 [Poll#info] Checkpoint
+1448.2 TEL | (proxy checking local liveness)
+1448.2  15 | 2019-01-31T12:26:15+0000 [Poll#info] Checkpoint
+1478.1 TEL | (proxy checking local liveness)
+1478.1  15 | 2019-01-31T12:26:45+0000 [Poll#info] Checkpoint
+1508.1 TEL | (proxy checking local liveness)
+1508.1  15 | 2019-01-31T12:27:15+0000 [Poll#info] Checkpoint
+1538.0 TEL | (proxy checking local liveness)
+1538.0  15 | 2019-01-31T12:27:45+0000 [Poll#info] Checkpoint
+1568.0 TEL | (proxy checking local liveness)
+1568.1  15 | 2019-01-31T12:28:15+0000 [Poll#info] Checkpoint
+1598.0 TEL | (proxy checking local liveness)
+1598.0  15 | 2019-01-31T12:28:45+0000 [Poll#info] Checkpoint
+1628.1 TEL | (proxy checking local liveness)
+1628.2  15 | 2019-01-31T12:29:15+0000 [Poll#info] Checkpoint
+1658.1 TEL | (proxy checking local liveness)
+1658.2  15 | 2019-01-31T12:29:45+0000 [Poll#info] Checkpoint
+1688.0 TEL | (proxy checking local liveness)
+1688.0  15 | 2019-01-31T12:30:15+0000 [Poll#info] Checkpoint
+1718.0 TEL | (proxy checking local liveness)
+1718.0  15 | 2019-01-31T12:30:45+0000 [Poll#info] Checkpoint
+1748.0 TEL | (proxy checking local liveness)
+1748.0  15 | 2019-01-31T12:31:15+0000 [Poll#info] Checkpoint
+1778.0 TEL | (proxy checking local liveness)
+1778.0  15 | 2019-01-31T12:31:45+0000 [Poll#info] Checkpoint
+1808.0 TEL | (proxy checking local liveness)
+1808.0  15 | 2019-01-31T12:32:15+0000 [Poll#info] Checkpoint
+2331.8  22 | Connection to 127.0.0.1 closed by remote host.
+2331.8  23 | Connection to 127.0.0.1 closed by remote host.
+2331.8  16 | E0131 12:41:02.800024   52396 portforward.go:224] lost connection to pod
+2331.8 TEL | [22] exit 255
+2331.8 TEL | [23] exit 255
+2331.8 TEL | [16] exit 0
+2331.8 TEL | END SPAN runner.py:586(wait_for_exit) 2316.4s
+2331.8 >>> | 
+2331.8 >>> | Background process (SSH port forward (exposed ports)) exited with return code 255. Command was:
+2331.8 >>> |   ssh -N -oServerAliveInterval=1 -oServerAliveCountMax=10 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -q -p 55051 telepresence@127.0.0.1 -R '*:80:127.0.0.1:8080'
+2331.8 >>> | 
+2331.8 >>> | Recent output was:
+2331.8 >>> |   Connection to 127.0.0.1 closed by remote host.
+2331.8 >>> | 
+2331.8 >>> | 
+2331.8 >>> | Proxy to Kubernetes exited. This is typically due to a lost connection.
+2331.8 >>> | 
+2331.8 TEL | EXITING with status code 255
+2331.8 >>> | Exit cleanup in progress
+2331.8 TEL | (Cleanup) Terminate local process
+2331.8 TEL | Killing local process...
+2332.8 TEL | (Cleanup) Unmount remote filesystem
+2332.8 TEL | [27] Capturing: umount -f /tmp/tel-7fg53i19/fs
+2332.8  27 | umount: /tmp/tel-7fg53i19/fs: not currently mounted
+2332.8 TEL | [27] exit 1 in 0.01 secs.
+2332.8 TEL | (Cleanup) Unmount remote filesystem failed:
+2332.8 TEL | (Cleanup)   Command '['umount', '-f', '/tmp/tel-7fg53i19/fs']' returned non-zero exit status 1.
+2332.8 TEL | (Cleanup) Kill BG process [23] SSH port forward (socks and proxy poll)
+2332.8 TEL | (Cleanup) Kill Web server for proxy poll
+2333.3 TEL | (Cleanup) Kill BG process [22] SSH port forward (exposed ports)
+2333.3 TEL | (Cleanup) Kill BG process [16] kubectl port-forward
+2333.3 TEL | (Cleanup) Kill BG process [15] kubectl logs
+2333.3 TEL | [15] exit -15
+2333.3 TEL | (Cleanup) Re-scale original deployment
+2333.3 TEL | [28] Running: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv scale deployment dbp-alfresco-dw --replicas=1
+2334.7  28 | deployment.extensions/dbp-alfresco-dw scaled
+2334.7 TEL | [28] ran in 1.35 secs.
+2334.7 TEL | (Cleanup) Delete new deployment
+2334.7 >>> | Swapping Deployment dbp-alfresco-dw back to its original state
+2334.7 TEL | [29] Running: kubectl --context arn:aws:eks:eu-west-1:586394462691:cluster/ps-dev --namespace sergiuv delete deployment dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea
+2335.5  29 | deployment.extensions "dbp-alfresco-dw-bf417fa624084809ba5904e42d3080ea" deleted
+2335.5 TEL | (Cleanup) Stop time tracking
+2335.5 TEL | END SPAN main.py:40(main) 2335.5s
+2335.5 TEL | (Cleanup) Remove temporary directory
+2335.7 TEL | (Cleanup) Save caches

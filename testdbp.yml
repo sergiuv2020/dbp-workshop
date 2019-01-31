@@ -1,0 +1,136 @@
+alfresco-infrastructure:
+  persistence:
+    efs:
+      enabled: true
+      dns: fs-cfa72007.efs.eu-west-1.amazonaws.com
+  alfresco-identity-service:
+    keycloak:
+      postgresql:
+        persistence:
+          subPath: "devcon/alfresco-identity-service/database-data"
+      keycloak:
+        replicas: 3
+    client:
+      alfresco:
+        redirectUris: ["http://devcon.ps.dev.alfresco.me*"]
+  nginx-ingress:
+    rbac:
+      create: true
+    controller:
+      config:
+        ssl-redirect: "false"
+      scope:
+        enabled: true
+      publishService:
+        enabled: true
+      service:
+        targetPorts:
+          http: http
+          https: http
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:586394462691:certificate/5a3aff4d-20a3-4018-b9ee-c59ec4487613"
+          service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+          service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+          external-dns.alpha.kubernetes.io/hostname: devcon.ps.dev.alfresco.me
+          service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+alfresco-content-services:
+  externalHost: "devcon.ps.dev.alfresco.me"
+  networkpolicysetting:
+    enabled: false
+  repository:
+    image:
+      repository: alfresco/alfresco-content-repository-aws
+    environment:
+      IDENTITY_SERVICE_URI: "http://devcon.ps.dev.alfresco.me/auth"
+      JAVA_OPTS: " -Dsolr.base.url=/solr
+        -Dsolr.secureComms=none
+        -Dindex.subsystem.name=solr6
+        -Dalfresco.cluster.enabled=true
+        -Ddeployment.method=DOCKER_COMPOSE
+        -DtrialUid=id00000000
+        -Xms2000M -Xmx2000M
+        -Ddsync.service.uris=\"$SYNC_SERVICE_URI\"
+        -Dauthentication.chain=identity-service1:identity-service,alfrescoNtlm1:alfrescoNtlm
+        -Didentity-service.enable-basic-auth=true
+        -Didentity-service.authentication.validation.failure.silent=false
+        -Didentity-service.auth-server-url=\"$IDENTITY_SERVICE_URI\"
+        -Didentity-service.realm=alfresco
+        -Didentity-service.resource=alfresco -Ds3.bucketName=ps-dev-bucket -Ds3.bucketLocation=eu-west-1"
+        # -Ddb.url=jdbc:postgresql://ps-dev-rds.cijbca5yttz2.eu-west-1.rds.amazonaws.com:5432/alfresco"
+    replicaCount: 1
+    livenessProbe: 
+      initialDelaySeconds: 420
+    resources:
+      requests:
+        memory: "2000Mi"
+  database:
+    external: true
+    url: "jdbc:postgresql://ps-dev-rds.cijbca5yttz2.eu-west-1.rds.amazonaws.com:5432/alfresco"
+    user: "alfresco"
+    password: "alfresco"
+  pdfrenderer:
+    livenessProbe:
+      initialDelaySeconds: 300
+    resources:
+      requests:
+        memory: "500Mi"
+  libreoffice:
+    livenessProbe:
+      initialDelaySeconds: 300
+    resources:
+      requests: 
+        memory: "500Mi"
+  imagemagick:
+    livenessProbe:
+      initialDelaySeconds: 300
+    resources:
+      requests:
+        memory: "500Mi"
+  alfresco-digital-workspace:
+    APP_CONFIG_AUTH_TYPE: "OAUTH"
+    APP_CONFIG_OAUTH2_HOST: "http://devcon.ps.dev.alfresco.me/auth/realms/alfresco"
+    APP_CONFIG_OAUTH2_CLIENTID: "alfresco"
+    APP_CONFIG_OAUTH2_IMPLICIT_FLOW: true
+    APP_CONFIG_OAUTH2_SILENT_LOGIN: false
+    APP_CONFIG_OAUTH2_REDIRECT_LOGIN: "/digital-workspace/"
+    APP_CONFIG_OAUTH2_REDIRECT_LOGOUT: "/digital-workspace/logout"
+  share:
+    livenessProbe:
+      initialDelaySeconds: 420
+    resources:
+      requests:
+        memory: "1000Mi"
+  persistence:
+    repository:
+      enabled: false
+  alfresco-search:
+    persistence:
+      search:
+        data:
+          subPath: "devcon/alfresco-content-services/solr-data"
+  postgresql: 
+    enabled: false
+    persistence:
+      enabled: false
+      subPath: "devcon/alfresco-content-services/database-data"
+    resources:
+      requests:
+        memory: "500Mi"
+alfresco-process-services:
+  enabled: true
+  postgresql:
+    persistence:
+      subPath: "devcon/alfresco-process-services/database-data"
+  processEngine:
+    persistence:
+      subPath: "devcon/alfresco-process-services/process-data"
+    environment:
+      IDENTITY_SERVICE_AUTH: "http://devcon.ps.dev.alfresco.me/auth"
+      IDENTITY_SERVICE_ENABLED: true
+    resources:
+      requests:
+        memory: "1000Mi"
+  adminApp:
+    resources:
+      requests:
+        memory: "250Mi"
