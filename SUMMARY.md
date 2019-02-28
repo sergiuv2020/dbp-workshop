@@ -7,6 +7,6 @@
 * [Monitoring and Maintaining](monitoring-and-maintaining.md)
 * [Extending the a DBP deployment](extending-the-a-dbp-deployment.md)
 * [CI/CD Considerations](ci-cd-considerations.md)
-* [DBP deployment - Azure](dbp-deployment.md)
 * [Cleanup](cleanup.md)
+* [DBP deployment - Azure](dbp-deployment.md)
 
