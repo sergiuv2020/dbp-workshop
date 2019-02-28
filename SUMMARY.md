@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Prerequisite Steps](README.md)
+* [DBP Workshop](README.md)
+* [Prerequisites](prerequisites.md)
 * [DBP Deployment EKS](dbp-deployment-eks.md)
 * [Troubleshooting of DBP deployment](troubleshooting-of-dbp-deployment.md)
 * [Extending the a DBP deployment](extending-the-a-dbp-deployment.md)
