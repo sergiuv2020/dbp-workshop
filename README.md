@@ -1,4 +1,4 @@
 # DBP Workshop
 
-{% page-ref page="./" %}
+[The workshop GitBook  ](https://vsergiu.gitbook.io/dbp-workshop/)
 
