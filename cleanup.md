@@ -18,3 +18,5 @@ Delete the cluster:
 eksctl delete cluster <your clustername> -r eu-west-1
 ```
 
+Delete the ec2 machine and the ec2 + cloudformation service roles you created.
+
