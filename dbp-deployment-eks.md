@@ -92,7 +92,7 @@ export DNSHOST=<Your Hostname withour the wildcard>
 Install the NFS Server chart:
 
 ```text
-helm install stable/nfs-server-provisioner --name nfsserver --namespace $DESIREDNAMESPACE
+helm install stable/nfs-server-provisioner --name nfsserver --namespace $DESIREDNAMESPACE  --set persistence.enabled=true,persistence.size=30Gi 
 ```
 
 ### Deploy the Digital Business Platform

@@ -155,7 +155,7 @@ EOF
 Deploy the chart
 
 ```text
-helm install alfresco-incubator/alfresco-dbp -f myvalues.yml --namespace $DESIREDNAMESPACE
+helm install alfresco-incubator/alfresco-dbp -f myvalues.yml --namespace $DESIREDNAMESPACE --set persistence.enabled=true,persistence.size=30Gi
 ```
 
 
