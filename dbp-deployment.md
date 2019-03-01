@@ -53,30 +53,12 @@ Create the secret object you got from quay.io
 kubectl create -f ~/secret.yaml -n $DESIREDNAMESPACE
 ```
 
-### Storage Setup
+### Setup Storage
 
-We will be creating an Azure file share to store our data in for the DBP.
-
-```text
-export AKS_PERS_SHARE_NAME=aksshare
-
-# Export the connection string as an environment variable, this is used when creating the Azure file share
-export AZURE_STORAGE_CONNECTION_STRING=`az storage account show-connection-string -n $AKS_PERS_STORAGE_ACCOUNT_NAME -g $AKS_PERS_RESOURCE_GROUP -o tsv`
-
-# Create the file share
-az storage share create -n $AKS_PERS_SHARE_NAME
-
-# Get storage account key
-STORAGE_KEY=$(az storage account keys list --resource-group $AKS_PERS_RESOURCE_GROUP --account-name $AKS_PERS_STORAGE_ACCOUNT_NAME --query "[0].value" -o tsv)
-
-# Echo storage key
-echo Storage account key: $STORAGE_KEY
-```
-
-Create a kubernetes secret with the credentials for connecting to the azure file.
+Install the NFS Server chart:
 
 ```text
-kubectl create secret generic azurefile-secret --from-literal=azurestorageaccountname=$AKS_PERS_STORAGE_ACCOUNT_NAME --from-literal=azurestorageaccountkey=$STORAGE_KEY -n $DESIREDNAMESPACE
+helm install stable/nfs-server-provisioner --name nfsserver --namespace $DESIREDNAMESPACE
 ```
 
 ### Ingress Setup
@@ -110,20 +92,71 @@ sed -i s/https/http/g values.yaml
 sed -i s/REPLACEME/$LBIP.nip.io/g values.yaml
 ```
 
-Deploy the dbp: 
+### Deploy the Digital Business Platform
+
+Add the alfresco repositories to helm
 
 ```text
-helm install alfresco-incubator/alfresco-dbp -f values.yaml \
---set alfresco-infrastructure.persistence.azureFile.enabled=true \
---set alfresco-infrastructure.persistence.azureFile.secretName=azurefile-secret \
---set alfresco-infrastructure.persistence.azureFile.shareName=$AKS_PERS_SHARE_NAME \
---set alfresco-infrastructure.nginx-ingress.enabled=false \
---namespace=$DESIREDNAMESPACE
+helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
+helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 ```
 
+Create your values file.
 
+```text
+cat <<EOF > myvalues.yml 
+global:
+  keycloak:
+    url: "http://alfresco-identity-service.$LBIP.nip.io/auth"
+  gateway:
+    http: true
+    host: "activiti-cloud-gateway.$LBIP.nip.io"
 
+alfresco-infrastructure:
+  persistence:
+    storageClass:
+      enabled: true
+      name: "nfs"
+  nginx-ingress:
+    enabled: false
 
+alfresco-content-services:
+  repository:
+    replicaCount: 1
+    livenessProbe:
+      initialDelaySeconds: 420
+    environment:
+      IDENTITY_SERVICE_URI: "http://alfresco-identity-service.$LBIP.nip.io/auth"
+  externalHost: "alfresco-cs-repository.$LBIP.nip.io"
+  alfresco-digital-workspace:
+    APP_CONFIG_OAUTH2_HOST: "http://alfresco-identity-service.$LBIP.nip.io/auth/realms/alfresco"
+  transformrouter:
+    replicaCount: 1
+  imagemagick:
+    replicaCount: 1
+  libreoffice:
+    replicaCount: 1
+  pdfrenderer:
+    replicaCount: 1
+  tika:
+    replicaCount: 1
+  share:
+    replicaCount: 1
+replicaCount: 1
+
+activiti-cloud-full-example:
+  infrastructure:
+    activiti-cloud-gateway:
+      ingress:
+        hostName: "activiti-cloud-gateway.$LBIP.nip.io"
+EOF
+```
+
+Deploy the chart
+
+```text
+helm install alfresco-incubator/alfresco-dbp -f myvalues.yml --namespace $DESIREDNAMESPACE
+```
 
 
 
