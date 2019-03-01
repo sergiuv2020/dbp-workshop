@@ -72,7 +72,7 @@ Create a new IAM Policy following permissions:
 }
 ```
 
-Create a ec2 service account role with the previous policy and assign them to the workshop machines.
+Create a ec2 + cloudformation service account role with the previous policy and assign them to the workshop machines.
 
 ### Commands and packages preinstalled on standard AMI image
 
@@ -152,6 +152,36 @@ ssh -A ec2-user@IP
 That EC2 instance has specific instance profile \(IAM role\) to be able to run `kubectl`.
 
 ### Quay Access
+
+See the Anaxes Shipyard documentation on [secrets](https://github.com/Alfresco/alfresco-anaxes-shipyard/blob/master/SECRETS.md).
+
+_Note_: You can reuse the secrets.yaml file from charts/incubator directory.
+
+```text
+cd charts/incubator
+cat ~/.docker/config.json | base64
+```
+
+Add the base64 string generated to .dockerconfigjson in secrets.yaml. The file should look similar to this:
+
+```text
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quay-registry-secret
+type: kubernetes.io/dockerconfigjson
+data:
+# Docker registries config json in base64 to do this just run - cat ~/.docker/config.json | base64
+  .dockerconfigjson: ew0KCSJhdXRocyI6IHsNCgkJImh0dHBzOi8vcXVheS5pbyI6IHsNCgkJCSJhdXRoIjogImRHVnpkRHAwWlhOMD0iDQoJCX0sDQoJCSJxdWF5LmlvIjogew0KCQkJImF1dGgiOiAiZEdWemREcDBaWE4w550KCQl9DQoJfSwNCgkiSHR0cEhlYWRlcnMiOiB7DQoJCSJVc2VyLUFnZW50IjogIkRvY2tlci1DbGllbnQvMTcuMTIuMC1jZS1yYzMgKGRhcndpbikiDQoJfQ0KfQ==
+```
+
+Then run this command:
+
+```text
+kubectl create -f secrets.yaml --namespace $DESIREDNAMESPACE
+```
+
+
 
 Create your registry pull secret by using the quay.io website. 
 
