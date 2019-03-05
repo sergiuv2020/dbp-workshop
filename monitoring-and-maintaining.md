@@ -45,23 +45,23 @@ If you use istio service mesh, it comes with Promethueus, _et al._.
 
 ### ELK Setup
 
+First let's create a separate namespace
+
+```bash
+kubectl create ns logging
+```
+
 Install Elastic Search
 
-```text
+```bash
 helm install --name elastic stable/elasticsearch --namespace=logging
 ```
 
 Install fluent-bit
 
-```text
+```bash
 helm install --name fluent-bit stable/fluent-bit --namespace=logging --set backend.type=es --set backend.es.host=elastic-elasticsearch-client
 ```
 
 Install Kibana
-
-
-
-  
-  
-Prometheus Quick Setup
 
