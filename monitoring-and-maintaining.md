@@ -8,15 +8,81 @@ description: >-
 
 ### Kubectl tips
 
-This will save you a lot of typing!
+This will save you a lot of typing, but I've not used it in the examples below.
 
-```bash
-alias k=kubectl
+```console
+$ alias k=kubectl
 ```
+
+#### Cheat sheet
 
 Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples.
 
-If you're working with mutliple clusters, a fixed namespace, then [kubectx and kubens](https://kubectx.dev) are useful.
+#### Get a shell in a container
+
+Assuming you're using a container with `bash` installed
+
+```bash
+kubectl exec -ti pod-name bash
+```
+
+Alpine only has `sh` installed
+
+```bash
+kubectl exec -ti pod-name sh
+```
+
+Note that there are containers that don't even offer shells (ones based directly on "scratch" or [Distroless](https://github.com/GoogleContainerTools/distroless)).
+
+#### Get a shell in a _specific_ container
+
+To run a shell in a _specific_ container in a pod use `-c`:
+
+```bash
+kubectl exec -ti pod-name -c container-name bash
+```
+
+You can use this with any *running* container. Indeed you can also use it with an `initContainer` if it's stuck.
+
+You can find the list of containers _viz._
+
+```bash
+kubectl get po pod-name \
+  -o jsonpath="{.spec['containers','initContainers'][*].name}"
+```
+
+Here's a real example.
+
+```console
+$ kubectl get po acs-alfresco-cs-repository-577c788567-wlg5g \
+  -n nic-acs-trial \
+  -o jsonpath="{.spec['containers','initContainers'][*].name}"
+alfresco-content-services init-db
+```
+
+#### Logs
+
+You can get logs via
+
+```bash
+kubectl logs pod-name
+```
+
+You can also get them for pods that have been replaced by newer instances
+
+```bash
+kubectl logs pod-name --previous
+```
+
+For issues with pods, then `describe` shows any issues at the end
+
+```bash
+k describe po pod-name
+```
+
+#### Extra tools
+
+If you're working with mutliple clusters, or with a particular namespace, then [kubectx and kubens](https://kubectx.dev) are useful.
 
 ### Prometheus, Graphana and Alert Manager
 
@@ -25,7 +91,7 @@ The simplest way to get started is to use the [kube-prometheus package](https://
 This installs Prometheus using the Prometheus Operator and sets up a
 lot of the common monitoring for you.
 
-Follow their Quickstart (which _can_ throw a lot of errors).
+Follow their Quickstart (which _can_ throw a lot of errors at the first command).
 
 #### Port-Forwarding
 
