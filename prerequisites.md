@@ -35,8 +35,8 @@ Create a new IAM Policy following permissions:
                 "iam:GetRolePolicy"
             ],
             "Resource": [
-                "arn:aws:iam::586394462691:instance-profile/eksctl-*",
-                "arn:aws:iam::586394462691:role/eksctl-*"
+                "arn:aws:iam::YourAccountID:instance-profile/eksctl-*",
+                "arn:aws:iam::YourAccountID:role/eksctl-*"
             ]
         },
         {
