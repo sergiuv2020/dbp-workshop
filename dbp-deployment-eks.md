@@ -9,7 +9,12 @@ description: 'Configuring, fine-tuning'
 Create the cluster
 
 ```text
-eksctl create cluster --name=<your-name-here> --region=eu-west-1 --nodes=3 --asg-access --external-dns-access--zones=eu-west-1a,eu-west-1b
+eksctl create cluster \
+--name=<your-name-here> \
+--region=<your region> \
+--nodes=2 \
+--external-dns-access \
+--zones=zonea,zoneb
 ```
 
 {% hint style="info" %}
