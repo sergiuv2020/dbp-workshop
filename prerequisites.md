@@ -8,7 +8,7 @@ description: You do not need to go trough these steps. They are here fore refere
 
 ### IAM Permissions
 
-Create a new IAM Policy following permissions: 
+Create a new IAM Policy following permissions:
 
 ```text
 {
@@ -181,11 +181,9 @@ Then run this command:
 kubectl create -f secrets.yaml --namespace $DESIREDNAMESPACE
 ```
 
+Create your registry pull secret by using the quay.io website.
 
-
-Create your registry pull secret by using the quay.io website. 
-
-Go to Account Settings -&gt; 
+Go to Account Settings -&gt;
 
 ![](.gitbook/assets/image.png)
 
@@ -193,7 +191,7 @@ Generate an encrypted password -&gt;
 
 ![](.gitbook/assets/image%20%281%29.png)
 
-Press the view k8s secret button and copy the contents of your secret. 
+Press the view k8s secret button and copy the contents of your secret.
 
 ![](.gitbook/assets/image%20%282%29.png)
 

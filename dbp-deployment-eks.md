@@ -9,7 +9,7 @@ description: 'Configuring, fine-tuning'
 Create the cluster
 
 ```text
-eksctl create cluster --name=<your-name-here> --region=eu-west-1 --nodes=3 --zones=eu-west-1a,eu-west-1b
+eksctl create cluster --name=<your-name-here> --region=eu-west-1 --nodes=3 --asg-access --external-dns-access--zones=eu-west-1a,eu-west-1b
 ```
 
 {% hint style="info" %}
@@ -51,40 +51,79 @@ kubectl create -f ~/secret.yaml -n $DESIREDNAMESPACE
 
 ### Ingress Setup <a id="ingress-setup"></a>
 
-Install nginx-ingress to your namespace.
+Export a variable with your hosted zone in aws:
 
 ```text
-cat <<EOF > ingressvalues.yml 
-rbac:
-  create: true
-controller:
-  scope:
-    enabled: true  
-  config:
-    ssl-redirect: "false"
-    server-tokens: "false"
+export HOSTEDZONE=your Hosted Zone, dont forget it ends with a dot 
+```
+
+Install External DNS
+
+```text
+cat <<EOF > externaldns.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-dns
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: external-dns
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get","watch","list"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: external-dns-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-dns
+subjects:
+- kind: ServiceAccount
+  name: external-dns
+  namespace: default
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: external-dns
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: external-dns
+    spec:
+      serviceAccountName: external-dns
+      containers:
+      - name: external-dns
+        image: registry.opensource.zalan.do/teapot/external-dns:latest
+        args:
+        - --source=service
+        - --source=ingress
+        - --domain-filter=$HOSTEDZONE # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+        - --provider=aws
+        - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+        - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+        - --registry=txt
+        - --txt-owner-id=Alfresco
 EOF
-helm install stable/nginx-ingress -f ingressvalues.yml --name ingress --namespace $DESIREDNAMESPACE
-```
-
-Get the lb adress of your ingress
-
-```text
-kubectl get svc/ingress-nginx-ingress-controller -n example -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-```
-
-Go to Route53 and create an A entry with the elb you just got as an alias.
-
-{% hint style="warning" %}
-The entry must be a wildcard entry.
-{% endhint %}
-
-![](.gitbook/assets/image%20%287%29.png)
-
-Save the entry to a variable:
-
-```text
-export DNSHOST=<Your Hostname withour the wildcard>
+kubectl apply -f $DESIREDNAMESPACE
 ```
 
 ### Setup Storage
@@ -104,35 +143,65 @@ helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubato
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 ```
 
+Export a DNS host you would like to use:
+
+```text
+export DNSHOST=YourDnsHost 
+# eg test.hostedzone
+```
+
 Create your values file.
 
 ```text
-cat <<EOF > myvalues.yml 
+cat <<EOF > myvalues.yaml
 global:
   keycloak:
-    url: "http://alfresco-identity-service.$DNSHOST/auth"
+    url: "https://alfresco-identity-service.$DNSHOST/auth"
   gateway:
-    http: true
     host: "activiti-cloud-gateway.$DNSHOST"
-
 alfresco-infrastructure:
+  alfresco-identity-service:
+    keycloak:
+      postgresql:
+        persistence:
+          existingClaim: null
+  nginx-ingress:
+    controller:
+      publishService:
+        enabled: true
+      service:
+        targetPorts:
+          http: http
+          https: http
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "*.$DNSHOST"
   persistence:
     storageClass:
       enabled: true
       name: "nfs"
-  nginx-ingress:
-    enabled: false
-
+alfresco-digital-workspace:
+  enabled: true
 alfresco-content-services:
+  alfresco-digital-workspace:
+    "APP_CONFIG_AUTH_TYPE": "OAUTH"
+    "APP_CONFIG_OAUTH2_HOST": "http://alfresco-identity-service.$DNSHOST/auth/realms/alfresco"
+    "APP_CONFIG_OAUTH2_CLIENTID": "alfresco"
+    "APP_CONFIG_OAUTH2_IMPLICIT_FLOW": "\"true\""
+    "APP_CONFIG_OAUTH2_SILENT_LOGIN": "\"true\""
+    "APP_CONFIG_OAUTH2_REDIRECT_LOGIN": "/digital-workspace/"
+    "APP_CONFIG_OAUTH2_REDIRECT_LOGOUT": "/digital-workspace/logout" 
   repository:
-    replicaCount: 1
-    livenessProbe:
-      initialDelaySeconds: 420
     environment:
       IDENTITY_SERVICE_URI: "http://alfresco-identity-service.$DNSHOST/auth"
-  externalHost: "alfresco-cs-repository.$DNSHOST"
-  alfresco-digital-workspace:
-    APP_CONFIG_OAUTH2_HOST: "http://alfresco-identity-service.$DNSHOST/auth/realms/alfresco"
+    replicaCount: 1
+    livenessProbe: 
+      initialDelaySeconds: 420
+    readynessProbe:
+      initialDelaySeconds: 500
+    resources:
+      requests:
+        memory: "2000Mi"
+  externalHost: "alfresco-cs-repository.$DNSHOST"  
   transformrouter:
     replicaCount: 1
   imagemagick:
@@ -145,19 +214,20 @@ alfresco-content-services:
     replicaCount: 1
   share:
     replicaCount: 1
-replicaCount: 1
-
+  postgresql:
+    persistence:
+      existingClaim: null
 activiti-cloud-full-example:
   infrastructure:
     activiti-cloud-gateway:
       ingress:
         hostName: "activiti-cloud-gateway.$DNSHOST"
-EOF
+EOF                     
 ```
 
 Deploy the chart
 
 ```text
-helm install alfresco-incubator/alfresco-dbp -f myvalues.yml --namespace $DESIREDNAMESPACE
+helm install alfresco-incubator/alfresco-dbp -f myvalues.yaml --namespace $DESIREDNAMESPACE
 ```
 

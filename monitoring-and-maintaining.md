@@ -6,20 +6,19 @@ description: >-
 
 # Monitoring and Maintaining
 
-### Kubectl tips
-
+## Kubectl tips
 
 This will save you a lot of typing, but I've not used it in the examples below.
 
-```console
+```text
 $ alias k=kubectl
 ```
 
-#### Cheat sheet
+### Cheat sheet
 
 Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples.
 
-#### Get a shell in a container
+### Get a shell in a container
 
 Assuming you're using a container with `bash` installed
 
@@ -33,9 +32,9 @@ Alpine only has `sh` installed
 kubectl exec -ti pod-name sh
 ```
 
-Note that there are containers that don't even offer shells (ones based directly on "scratch" or [Distroless](https://github.com/GoogleContainerTools/distroless)).
+Note that there are containers that don't even offer shells \(ones based directly on "scratch" or [Distroless](https://github.com/GoogleContainerTools/distroless)\).
 
-#### Get a shell in a _specific_ container
+### Get a shell in a _specific_ container
 
 To run a shell in a _specific_ container in a pod use `-c`:
 
@@ -43,7 +42,7 @@ To run a shell in a _specific_ container in a pod use `-c`:
 kubectl exec -ti pod-name -c container-name bash
 ```
 
-You can use this with any *running* container. Indeed you can also use it with an `initContainer` if it's stuck.
+You can use this with any _running_ container. Indeed you can also use it with an `initContainer` if it's stuck.
 
 You can find the list of containers _viz._
 
@@ -54,14 +53,14 @@ kubectl get po pod-name \
 
 Here's a real example.
 
-```console
+```text
 $ kubectl get po acs-alfresco-cs-repository-577c788567-wlg5g \
   -n nic-acs-trial \
   -o jsonpath="{.spec['containers','initContainers'][*].name}"
 alfresco-content-services init-db
 ```
 
-#### Logs
+### Logs
 
 You can get logs via
 
@@ -81,20 +80,19 @@ For issues with pods, then `describe` shows any issues at the end
 k describe po pod-name
 ```
 
-#### Extra tools
+### Extra tools
 
 If you're working with mutliple clusters, or with a particular namespace, then [kubectx and kubens](https://kubectx.dev) are useful.
 
-### Prometheus, Graphana and Alert Manager
+## Prometheus, Graphana and Alert Manager
 
 The simplest way to get started is to use the [kube-prometheus package](https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus).
 
-This installs Prometheus using the Prometheus Operator and sets up a
-lot of the common monitoring for you.
+This installs Prometheus using the Prometheus Operator and sets up a lot of the common monitoring for you.
 
-Follow their Quickstart (which _can_ throw a lot of errors at the first command).
+Follow their Quickstart \(which _can_ throw a lot of errors at the first command\).
 
-#### Port-Forwarding
+### Port-Forwarding
 
 If you have a bastion host, you will need to tunnel to get to that
 
@@ -102,15 +100,15 @@ If you have a bastion host, you will need to tunnel to get to that
 ssh -L 9090:127.0.0.1:9090 bastion-host -N -f
 ```
 
-Then visit http://localhost:9090
+Then visit [http://localhost:9090](http://localhost:9090)
 
-Repeat for ports 3000 (graphana) and 9093 (alert-manager).
+Repeat for ports 3000 \(graphana\) and 9093 \(alert-manager\).
 
-#### Istio
+### Istio
 
 If you use istio service mesh, it comes with Promethueus, _et al._.
 
-### ELK Setup
+## ELK Setup
 
 First let's create a separate namespace
 
