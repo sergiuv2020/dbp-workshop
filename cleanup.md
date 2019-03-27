@@ -15,7 +15,7 @@ helm delete --purge release-name1 release-name2
 Delete the cluster:
 
 ```text
-eksctl delete cluster <your clustername> -r eu-west-1
+eksctl delete cluster <your clustername> -r <your region>
 ```
 
 Delete the ec2 machine and the ec2 + cloudformation service roles you created.
