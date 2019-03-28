@@ -6,7 +6,7 @@ description: >-
 
 # Extending the a DBP deployment
 
-### Rolling Out Custom Images
+### Rolling Upgrades - Standard upgrades in k8s
 
 We have created a test image with an ADF app we will use for the purpose of demonstrating upgrades.
 
