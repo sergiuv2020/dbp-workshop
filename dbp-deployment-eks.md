@@ -13,6 +13,7 @@ eksctl create cluster \
 --name=<your-name-here> \
 --region=<your region> \
 --nodes=2 \
+--node-type=m5.xlarge \
 --external-dns-access \
 --zones=zonea,zoneb
 ```
@@ -107,6 +108,7 @@ alfresco-infrastructure:
   alfresco-identity-service:
     keycloak:
       postgresql:
+        password: identity
         persistence:
           existingClaim: null
   nginx-ingress:
