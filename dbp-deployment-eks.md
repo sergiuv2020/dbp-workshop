@@ -56,82 +56,21 @@ kubectl create -f ~/secret.yaml -n $DESIREDNAMESPACE
 
 ### Ingress Setup <a id="ingress-setup"></a>
 
-Export a variable with your hosted zone in aws:
-
-```text
-export HOSTEDZONE=your Hosted Zone, dont forget it ends with a dot 
-```
-
 Install External DNS
 
 ```text
-cat <<EOF > externaldns.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: external-dns
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: external-dns
-rules:
-- apiGroups: [""]
-  resources: ["services"]
-  verbs: ["get","watch","list"]
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get","watch","list"]
-- apiGroups: ["extensions"]
-  resources: ["ingresses"]
-  verbs: ["get","watch","list"]
-- apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["list"]
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: external-dns-viewer
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: external-dns
-subjects:
-- kind: ServiceAccount
-  name: external-dns
-  namespace: default
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: external-dns
-spec:
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: external-dns
-    spec:
-      serviceAccountName: external-dns
-      containers:
-      - name: external-dns
-        image: registry.opensource.zalan.do/teapot/external-dns:latest
-        args:
-        - --source=service
-        - --source=ingress
-        - --domain-filter=$HOSTEDZONE # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
-        - --provider=aws
-        - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
-        - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
-        - --registry=txt
-        - --txt-owner-id=Alfresco
-EOF
-kubectl apply -f externaldns.yaml -n $DESIREDNAMESPACE
+helm install stable/external-dns \
+--name externaldns \
+--namespace kube-system \
+--set aws.region="eu-west-1" \
+--set rbac.create=true
+--set txtOwnerId="workshop"
+
 ```
 
-### Setup Storage
+#### 
+
+### Storage Setup
 
 Install the NFS Server chart:
 
