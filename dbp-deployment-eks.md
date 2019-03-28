@@ -128,7 +128,7 @@ spec:
         - --registry=txt
         - --txt-owner-id=Alfresco
 EOF
-kubectl apply -f $DESIREDNAMESPACE
+kubectl apply -f externaldns.yaml -n $DESIREDNAMESPACE
 ```
 
 ### Setup Storage
