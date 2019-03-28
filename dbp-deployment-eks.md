@@ -227,7 +227,9 @@ activiti-cloud-full-example:
     activiti-cloud-gateway:
       ingress:
         hostName: "activiti-cloud-gateway.$DNSHOST"
-EOF                     
+        
+EOF
+                     
 ```
 
 Deploy the chart
