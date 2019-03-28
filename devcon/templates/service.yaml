@@ -4,7 +4,7 @@ metadata:
   name: {{ template "devcon.fullname" . }}
   labels:
     app: {{ template "devcon.name" . }}
-    chart: {{ template "cobol.chart" . }}
+    chart: {{ template "devcon.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
