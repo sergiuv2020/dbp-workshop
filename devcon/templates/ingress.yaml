@@ -7,7 +7,7 @@ metadata:
   name: {{ $fullName }}
   labels:
     app: {{ template "devcon.name" . }}
-    chart: {{ template "cobol.chart" . }}
+    chart: {{ template "devcon.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
