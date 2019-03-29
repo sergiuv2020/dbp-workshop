@@ -34,7 +34,7 @@ Alpine only has `sh` installed
 kubectl exec -ti pod-name sh
 ```
 
-Note that there are containers that don't even offer shells (ones based directly on "scratch" or [Distroless](https://github.com/GoogleContainerTools/distroless)).
+Note that there are containers that don't even offer shells \(ones based directly on "scratch" or [Distroless](https://github.com/GoogleContainerTools/distroless)\).
 
 #### Get a shell in a _specific_ container
 
@@ -100,21 +100,40 @@ The simplest way to get started is to use the [kube-prometheus package](https://
 
 This installs Prometheus using the Prometheus Operator and sets up a lot of the common monitoring for you.
 
-Follow their Quickstart (which _can_ throw a lot of errors at the first command). 
+Follow their Quickstart (which _can_ throw a lot of errors in the `kubectl create` stages). 
 
-kube-prometheus relies on understanding JSonnet to configure it.
+```bash
+wget https://github.com/coreos/prometheus-operator/archive/v0.29.0.tar.gz
+tar zxf v0.29.0.tar.gz
+cd prometheus-operator-0.29.0/contrib/kube-prometheus/
+kubectl create -f manifests/
+# You have to run it twice. 
+kubectl create -f manifests/
+```
+
+Sadly, kube-prometheus relies on understanding JSonnet to configure it.
 
 ### Port-Forwarding
 
-If you have a bastion host, you will need to tunnel to get to that
+The simplest way of getting to the dashboards/web interfaces of the components is to tunnel it.
+
+On the bastion
+
+```bash
+kubectl -n monitoring port-forward svc/prometheus-k8s 9090 &
+kubectl -n monitoring port-forward svc/grafana 3000 &
+kubectl -n monitoring port-forward svc/alertmanager-main 9093 &
+```
+
+and locally (on macOS or Linux)
 
 ```bash
 ssh -L 9090:127.0.0.1:9090 bastion-host -N -f
+ssh -L 3000:127.0.0.1:3000 bastion-host -N -f
+ssh -L 9093:127.0.0.1:9093 bastion-host -N -f
 ```
 
-Then visit [http://localhost:9090](http://localhost:9090)
-
-Repeat for ports 3000 \(graphana\) and 9093 \(alert-manager\).
+Then visit [http://localhost:9090](http://localhost:9090). This isn't a production-grade way of exposing the services.
 
 #### Alfresco Content Services
 
