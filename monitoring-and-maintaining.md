@@ -15,9 +15,10 @@ This will save you a lot of typing, but I've not used it in the examples below.
 $ alias k=kubectl
 ```
 
-#### Cheat sheet
+#### Cheat sheet and book
 
-Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples.
+Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. 
+Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
 
 #### Get a shell in a container
 
@@ -85,6 +86,14 @@ k describe po pod-name
 
 If you're working with mutliple clusters, or with a particular namespace, then [kubectx and kubens](https://kubectx.dev) are useful.
 
+## Three Pillars of Observability
+
+Logs, metrics, and traces are called the three pillars of observability. The typical open source tools used for these tasks follow:
+
+* Logs are sent to an ELK stack
+* Metrics are sent to Prometheus, and visualised in Grafana
+* Traces are sent to Jaeger
+
 ### Prometheus, Graphana and Alert Manager
 
 The simplest way to get started is to use the [kube-prometheus package](https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus).
@@ -92,7 +101,9 @@ The simplest way to get started is to use the [kube-prometheus package](https://
 This installs Prometheus using the Prometheus Operator and sets up a
 lot of the common monitoring for you.
 
-Follow their Quickstart (which _can_ throw a lot of errors at the first command).
+Follow their Quickstart (which _can_ throw a lot of errors at the first command). 
+
+kube-prometheus relies on understanding JSonnet to configure it.
 
 #### Port-Forwarding
 
@@ -105,6 +116,10 @@ ssh -L 9090:127.0.0.1:9090 bastion-host -N -f
 Then visit http://localhost:9090
 
 Repeat for ports 3000 (graphana) and 9093 (alert-manager).
+
+#### Alfresco Content Services
+
+ACS 6.1.0 exposes a Prometheus endpoint at `/alfresco/s/prometheus` and you can read more about it in the [acs-packaging site](https://github.com/Alfresco/acs-packaging/tree/master/docs/micrometer).
 
 #### Istio
 
