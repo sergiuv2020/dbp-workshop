@@ -64,7 +64,7 @@ helm install stable/external-dns \
 --name externaldns \
 --namespace kube-system \
 --set aws.region="eu-west-1" \
---set rbac.create=true
+--set rbac.create=true \
 --set txtOwnerId="workshop"
 
 ```
