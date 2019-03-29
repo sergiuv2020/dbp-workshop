@@ -6,7 +6,7 @@ description: >-
 
 # Monitoring and Maintaining
 
-### Kubectl tips
+## Kubectl tips
 
 
 This will save you a lot of typing, but I've not used it in the examples below.
@@ -94,18 +94,17 @@ Logs, metrics, and traces are called the three pillars of observability. The typ
 * Metrics are sent to Prometheus, and visualised in Grafana
 * Traces are sent to Jaeger
 
-### Prometheus, Graphana and Alert Manager
+## Prometheus, Graphana and Alert Manager
 
 The simplest way to get started is to use the [kube-prometheus package](https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus).
 
-This installs Prometheus using the Prometheus Operator and sets up a
-lot of the common monitoring for you.
+This installs Prometheus using the Prometheus Operator and sets up a lot of the common monitoring for you.
 
 Follow their Quickstart (which _can_ throw a lot of errors at the first command). 
 
 kube-prometheus relies on understanding JSonnet to configure it.
 
-#### Port-Forwarding
+### Port-Forwarding
 
 If you have a bastion host, you will need to tunnel to get to that
 
@@ -113,9 +112,9 @@ If you have a bastion host, you will need to tunnel to get to that
 ssh -L 9090:127.0.0.1:9090 bastion-host -N -f
 ```
 
-Then visit http://localhost:9090
+Then visit [http://localhost:9090](http://localhost:9090)
 
-Repeat for ports 3000 (graphana) and 9093 (alert-manager).
+Repeat for ports 3000 \(graphana\) and 9093 \(alert-manager\).
 
 #### Alfresco Content Services
 
@@ -125,7 +124,7 @@ ACS 6.1.0 exposes a Prometheus endpoint at `/alfresco/s/prometheus` and you can 
 
 If you use istio service mesh, it comes with Promethueus, _et al._.
 
-### ELK Setup
+## ELK Setup
 
 First let's create a separate namespace
 
