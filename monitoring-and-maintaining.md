@@ -8,17 +8,15 @@ description: >-
 
 ## Kubectl tips
 
-
 This will save you a lot of typing, but I've not used it in the examples below.
 
-```console
+```text
 $ alias k=kubectl
 ```
 
 #### Cheat sheet and book
 
-Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. 
-Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
+Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
 
 #### Get a shell in a container
 
@@ -44,7 +42,7 @@ To run a shell in a _specific_ container in a pod use `-c`:
 kubectl exec -ti pod-name -c container-name bash
 ```
 
-You can use this with any *running* container. Indeed you can also use it with an `initContainer` if it's stuck.
+You can use this with any _running_ container. Indeed you can also use it with an `initContainer` if it's stuck.
 
 You can find the list of containers _viz._
 
@@ -55,7 +53,7 @@ kubectl get po pod-name \
 
 Here's a real example.
 
-```console
+```text
 $ kubectl get po acs-alfresco-cs-repository-577c788567-wlg5g \
   -n nic-acs-trial \
   -o jsonpath="{.spec['containers','initContainers'][*].name}"
@@ -100,7 +98,7 @@ The simplest way to get started is to use the [kube-prometheus package](https://
 
 This installs Prometheus using the Prometheus Operator and sets up a lot of the common monitoring for you.
 
-Follow their Quickstart (which _can_ throw a lot of errors in the `kubectl create` stages). 
+Follow their Quickstart \(which _can_ throw a lot of errors in the `kubectl create` stages\).
 
 ```bash
 wget https://github.com/coreos/prometheus-operator/archive/v0.29.0.tar.gz
@@ -125,7 +123,7 @@ kubectl -n monitoring port-forward svc/grafana 3000 &
 kubectl -n monitoring port-forward svc/alertmanager-main 9093 &
 ```
 
-and locally (on macOS or Linux)
+and locally \(on macOS or Linux\)
 
 ```bash
 ssh -L 9090:127.0.0.1:9090 bastion-host -N -f

@@ -4,7 +4,7 @@ description: 'Configuring, fine-tuning'
 
 # DBP Deployment EKS
 
-### Cluster Setup
+## Cluster Setup
 
 Create the cluster
 
@@ -55,7 +55,7 @@ kubectl create -f ~/secret.yaml -n $DESIREDNAMESPACE
 [https://eksworkshop.com/scaling/deploy\_ca/](https://eksworkshop.com/scaling/deploy_ca/)
 {% endhint %}
 
-### Ingress Setup <a id="ingress-setup"></a>
+## Ingress Setup  <a id="ingress-setup"></a>
 
 Install External DNS
 
@@ -66,20 +66,17 @@ helm install stable/external-dns \
 --set aws.region="eu-west-1" \
 --set rbac.create=true \
 --set txtOwnerId="workshop"
-
 ```
 
-#### 
-
-### Storage Setup
+## Storage Setup
 
 Install the NFS Server chart:
 
 ```text
-helm install stable/nfs-server-provisioner --name nfsserver --namespace $DESIREDNAMESPACE  --set persistence.enabled=true,persistence.size=30Gi 
+helm install stable/nfs-server-provisioner --name nfsserver --namespace $DESIREDNAMESPACE  --set persistence.enabled=true,persistence.size=30Gi
 ```
 
-### Deploy the Digital Business Platform
+## Deploy the Digital Business Platform
 
 Add the alfresco repositories to helm
 
@@ -168,9 +165,8 @@ activiti-cloud-full-example:
     activiti-cloud-gateway:
       ingress:
         hostName: "activiti-cloud-gateway.$DNSHOST"
-        
+
 EOF
-                     
 ```
 
 Deploy the chart
