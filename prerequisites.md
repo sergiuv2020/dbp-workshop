@@ -185,15 +185,15 @@ Create your registry pull secret by using the quay.io website.
 
 Go to Account Settings -&gt;
 
-![](.gitbook/assets/image.png)
+![](.gitbook/assets/image%20%289%29.png)
 
 Generate an encrypted password -&gt;
 
-![](.gitbook/assets/image%20%281%29.png)
+![](.gitbook/assets/image%20%286%29.png)
 
 Press the view k8s secret button and copy the contents of your secret.
 
-![](.gitbook/assets/image%20%282%29.png)
+![](.gitbook/assets/image%20%287%29.png)
 
 Afterwards get back to your ssh session, paste the content into a secret.yaml file and change the metadata.name to quay-registry-secret.
 
