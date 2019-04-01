@@ -8,15 +8,17 @@ description: >-
 
 ## Kubectl tips
 
+
 This will save you a lot of typing, but I've not used it in the examples below.
 
-```text
-$ alias k=kubectl
+```bash
+alias k=kubectl
 ```
 
 #### Cheat sheet and book
 
-Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
+Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. 
+Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
 
 #### Get a shell in a container
 
@@ -42,7 +44,7 @@ To run a shell in a _specific_ container in a pod use `-c`:
 kubectl exec -ti pod-name -c container-name bash
 ```
 
-You can use this with any _running_ container. Indeed you can also use it with an `initContainer` if it's stuck.
+You can use this with any *running* container. Indeed you can also use it with an `initContainer` if it's stuck.
 
 You can find the list of containers _viz._
 
@@ -53,7 +55,7 @@ kubectl get po pod-name \
 
 Here's a real example.
 
-```text
+```console
 $ kubectl get po acs-alfresco-cs-repository-577c788567-wlg5g \
   -n nic-acs-trial \
   -o jsonpath="{.spec['containers','initContainers'][*].name}"
@@ -123,23 +125,63 @@ kubectl -n monitoring port-forward svc/grafana 3000 &
 kubectl -n monitoring port-forward svc/alertmanager-main 9093 &
 ```
 
+
 and locally \(on macOS or Linux\)
+
 
 ```bash
 ssh -L 9090:127.0.0.1:9090 bastion-host -N -f
 ssh -L 3000:127.0.0.1:3000 bastion-host -N -f
 ssh -L 9093:127.0.0.1:9093 bastion-host -N -f
+
 ```
 
 Then visit [http://localhost:9090](http://localhost:9090). This isn't a production-grade way of exposing the services.
+
+You could expose the deployments via something like the following which will assign a new ELB to grafana. 
+
+```bash
+kubectl expose deployment grafana -n monitoring --type=LoadBalancer --name=grafana2
+```
 
 #### Alfresco Content Services
 
 ACS 6.1.0 exposes a Prometheus endpoint at `/alfresco/s/prometheus` and you can read more about it in the [acs-packaging site](https://github.com/Alfresco/acs-packaging/tree/master/docs/micrometer).
 
+
+A basic configuration for Prometheus to scrape Alfresco follows
+```
+  - job_name: 'alfresco'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+
+
+    static_configs:
+      - targets: ['acs.nic-demo.dev.alfresco.me']
+        labels:
+          group: 'production'
+
+    metrics_path: '/alfresco/s/prometheus'
+    basic_auth:
+      username: admin
+      password: admin
+```
+
+### Prometheus: external to the cluster
+
+Deploying external to your cluster is simple and useful while developing. You can chain prometheus instances via
+[federation](https://prometheus.io/docs/prometheus/latest/federation/)
+so you could even take a mix+match approach to have in-cluster prometheus instances (per cluster), federated to an external instance.
+
+Grafana talks to Prometheus, but the configuration seems obtuse. Here's a working screenshot for grafana and prometheus installed on 
+the same server, but external to the cluster. (Note that Prometheus does not provide any authentication).
+
+![](.gitbook/assets/grafana.png)
+
 #### Istio
 
-If you use istio service mesh, it comes with Promethueus, _et al._.
+If you use istio service mesh, it also comes with Promethueus, _et al._.
 
 ## ELK Setup
 
@@ -163,3 +205,6 @@ helm install --name fluent-bit stable/fluent-bit --namespace=logging --set backe
 
 Install Kibana
 
+```bash
+helm install --name kibana stable/kibana --namespace=logging
+```
