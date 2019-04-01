@@ -67,10 +67,6 @@ The upgrades/rollbacks we just did are on an adf frontend so usually no data get
 These will help you handling data backups/snapshots and restoration on rollbacks so that you do not corrupt your data.
 {% endhint %}
 
-### Canary Upgrades
-
-### Blue/Green Upgrades
-
 ### Adding an extra ADF Frontend
 
 Adding additional apps connecting to an extra ADF Frontend is fairly easy. Let's clone the workshop repo.
@@ -83,7 +79,7 @@ This repo already has a chart in it, a very basic one that holds a generated adf
 
 ```text
 cd dbp-workshop
-helm install devcon $DESIREDNAMESPACE
+helm install dbp-workshop/devcon --name adf --namespace $DESIREDNAMESPACE
 ```
 
 Now if you access the same host as digital-workspace but under /development/ path you will see that your app is deployed. And in our case it actually uses the same backend repository as digital workspace so you could potentially have two frontends for different purposes and users. 

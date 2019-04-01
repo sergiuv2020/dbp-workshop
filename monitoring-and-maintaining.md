@@ -100,7 +100,7 @@ The simplest way to get started is to use the [kube-prometheus package](https://
 
 This installs Prometheus using the Prometheus Operator and sets up a lot of the common monitoring for you.
 
-Follow their Quickstart (which _can_ throw a lot of errors in the `kubectl create` stages). 
+Follow their Quickstart \(which _can_ throw a lot of errors in the `kubectl create` stages\).
 
 ```bash
 wget https://github.com/coreos/prometheus-operator/archive/v0.29.0.tar.gz
@@ -125,12 +125,15 @@ kubectl -n monitoring port-forward svc/grafana 3000 &
 kubectl -n monitoring port-forward svc/alertmanager-main 9093 &
 ```
 
-and locally (on macOS or Linux)
+
+and locally \(on macOS or Linux\)
+
 
 ```bash
 ssh -L 9090:127.0.0.1:9090 bastion-host -N -f
 ssh -L 3000:127.0.0.1:3000 bastion-host -N -f
 ssh -L 9093:127.0.0.1:9093 bastion-host -N -f
+
 ```
 
 Then visit [http://localhost:9090](http://localhost:9090). This isn't a production-grade way of exposing the services.
@@ -145,12 +148,14 @@ kubectl expose deployment grafana -n monitoring --type=LoadBalancer --name=grafa
 
 ACS 6.1.0 exposes a Prometheus endpoint at `/alfresco/s/prometheus` and you can read more about it in the [acs-packaging site](https://github.com/Alfresco/acs-packaging/tree/master/docs/micrometer).
 
+
 A basic configuration for Prometheus to scrape Alfresco follows
 ```
   - job_name: 'alfresco'
 
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
+
 
     static_configs:
       - targets: ['acs.nic-demo.dev.alfresco.me']
