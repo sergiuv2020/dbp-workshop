@@ -10,13 +10,14 @@ description: >-
 
 This will save you a lot of typing, but I've not used it in the examples below.
 
-```text
-$ alias k=kubectl
+```
+alias k=kubectl
 ```
 
 #### Cheat sheet and book
 
-Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
+Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. 
+Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
 
 #### Get a shell in a container
 
@@ -42,7 +43,7 @@ To run a shell in a _specific_ container in a pod use `-c`:
 kubectl exec -ti pod-name -c container-name bash
 ```
 
-You can use this with any _running_ container. Indeed you can also use it with an `initContainer` if it's stuck.
+You can use this with any *running* container. Indeed you can also use it with an `initContainer` if it's stuck.
 
 You can find the list of containers _viz._
 
@@ -94,22 +95,34 @@ Logs, metrics, and traces are called the three pillars of observability. The typ
 
 ## Prometheus, Graphana and Alert Manager
 
-The simplest way to get started is to use the [kube-prometheus package](https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus).
+The simplest way to get started is to use the helm chart.
 
-This installs Prometheus using the Prometheus Operator and sets up a lot of the common monitoring for you.
-
-Follow their Quickstart \(which _can_ throw a lot of errors in the `kubectl create` stages\).
+The following instructions are taken from https://eksworkshop.com/monitoring/ which AWS vastly simplified yesterday (3rd April)!
 
 ```bash
-wget https://github.com/coreos/prometheus-operator/archive/v0.29.0.tar.gz
-tar zxf v0.29.0.tar.gz
-cd prometheus-operator-0.29.0/contrib/kube-prometheus/
-kubectl create -f manifests/
-# You have to run it twice. 
-kubectl create -f manifests/
+kubectl create namespace prometheus
+helm install stable/prometheus \
+    --name prometheus \
+    --namespace prometheus \
+    --set alertmanager.persistentVolume.storageClass="gp2" \
+    --set server.persistentVolume.storageClass="gp2"
+
+kubectl create namespace grafana
+helm install stable/grafana \
+    --name grafana \
+    --namespace grafana \
+    --set persistence.storageClassName="gp2" \
+    --set adminPassword="CHANGEME" \
+    --set datasources."datasources\.yaml".apiVersion=1 \
+    --set datasources."datasources\.yaml".datasources[0].name=Prometheus \
+    --set datasources."datasources\.yaml".datasources[0].type=prometheus \
+    --set datasources."datasources\.yaml".datasources[0].url=http://prometheus-server.prometheus.svc.cluster.local \
+    --set datasources."datasources\.yaml".datasources[0].access=proxy \
+    --set datasources."datasources\.yaml".datasources[0].isDefault=true \
+    --set service.type=LoadBalancer
 ```
 
-Sadly, kube-prometheus relies on understanding JSonnet to configure it.
+An alternative, [kube-prometheus package](https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus) relies on understanding JSonnet to configure it.
 
 ### Port-Forwarding
 
@@ -118,48 +131,61 @@ The simplest way of getting to the dashboards/web interfaces of the components i
 On the bastion
 
 ```bash
-kubectl -n monitoring port-forward svc/prometheus-k8s 9090 &
-kubectl -n monitoring port-forward svc/grafana 3000 &
-kubectl -n monitoring port-forward svc/alertmanager-main 9093 &
+kubectl -n prometheus port-forward svc/prometheus-server 9090 &
+kubectl -n monitoring port-forward svc/prometheus-alertmanager 9093 &
 ```
 
 and locally \(on macOS or Linux\)
 
 ```bash
 ssh -L 9090:127.0.0.1:9090 bastion-host -N -f
-ssh -L 3000:127.0.0.1:3000 bastion-host -N -f
 ssh -L 9093:127.0.0.1:9093 bastion-host -N -f
 ```
 
 Then visit [http://localhost:9090](http://localhost:9090). This isn't a production-grade way of exposing the services.
 
+### Grafana
+
+Grafana is already exposed as a LoadBalancer in this configuration. You can find the hostname via
+
+```bash
+kubectl get svc -n grafana grafana -o json | grep hostname  
+```
+
 #### Alfresco Content Services
 
 ACS 6.1.0 exposes a Prometheus endpoint at `/alfresco/s/prometheus` and you can read more about it in the [acs-packaging site](https://github.com/Alfresco/acs-packaging/tree/master/docs/micrometer).
 
+A basic configuration for Prometheus to scrape Alfresco follows:
+
+```
+  - job_name: 'alfresco'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+
+    static_configs:
+      - targets: ['acs.nic-demo.dev.alfresco.me']
+        labels:
+          group: 'production'
+
+    metrics_path: '/alfresco/s/prometheus'
+    basic_auth:
+      username: admin
+      password: admin
+```
+
+### Prometheus: external to the cluster
+
+Deploying external to your cluster is simple and useful while developing. You can chain prometheus instances via
+[federation](https://prometheus.io/docs/prometheus/latest/federation/)
+so you could even take a mix+match approach to have in-cluster prometheus instances (per cluster), federated to an external instance.
+
+Grafana talks to Prometheus, but the configuration seems obtuse. Here's a working screenshot for grafana and prometheus installed on 
+the same server, but external to the cluster. (Note that Prometheus does not provide any authentication).
+
+![](.gitbook/assets/grafana.png)
+
 #### Istio
 
 If you use istio service mesh, it comes with Promethueus, _et al._.
-
-## ELK Setup
-
-First let's create a separate namespace
-
-```bash
-kubectl create ns logging
-```
-
-Install Elastic Search
-
-```bash
-helm install --name elastic stable/elasticsearch --namespace=logging
-```
-
-Install fluent-bit
-
-```bash
-helm install --name fluent-bit stable/fluent-bit --namespace=logging --set backend.type=es --set backend.es.host=elastic-elasticsearch-client
-```
-
-Install Kibana
-
