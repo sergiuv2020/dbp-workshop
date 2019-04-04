@@ -4,6 +4,7 @@ metadata:
   name: {{ template "devcon.fullname" . }}
   labels:
     app: {{ template "devcon.name" . }}
+    component: "digitalWorkspaceApplication"
     chart: {{ template "devcon.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -13,11 +14,13 @@ spec:
     matchLabels:
       app: {{ template "devcon.name" . }}
       release: {{ .Release.Name }}
+      component: "digitalWorkspaceApplication"
   template:
     metadata:
       labels:
         app: {{ template "devcon.name" . }}
         release: {{ .Release.Name }}
+        component: "digitalWorkspaceApplication"
     spec:
       containers:
         - name: {{ .Chart.Name }}
