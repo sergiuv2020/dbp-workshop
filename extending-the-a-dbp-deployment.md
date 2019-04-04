@@ -84,3 +84,28 @@ helm install dbp-workshop/devcon --name adf --namespace $DESIREDNAMESPACE
 
 Now if you access the same host as digital-workspace but under /development/ path you will see that your app is deployed. And in our case it actually uses the same backend repository as digital workspace so you could potentially have two frontends for different purposes and users. 
 
+### Canary Upgrades - optional
+
+```text
+kubectl get svc -n $DESIREDNAMESPACE
+export DBPRELEASENAME=<YOUR ReleaseName>
+```
+
+```text
+kubectl patch svc -n $DESIREDNAMESPACE $DBPRELEASENAME-alfresco-dw -p '{"spec": { "selector": {"component": "digitalWorkspaceApplication"}}}'
+```
+
+To test this we can just curl the app url multiple time and we will see that the adf app title and the alfresco digital workspace titles appear in a 50/50 fashion.
+
+```text
+curl APPURL/digital-workspace/login -s | grep title
+```
+
+This will actually get you to a 50/50 split between accessing digital-workspace and the devcon app.
+
+To make this like 80/20 we would need to scale the digital workspace app to 4 replicas.
+
+```text
+curl APPURL/digital-workspace/login -s | grep Application
+```
+

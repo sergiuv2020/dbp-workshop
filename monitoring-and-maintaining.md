@@ -10,14 +10,13 @@ description: >-
 
 This will save you a lot of typing, but I've not used it in the examples below.
 
-```
+```text
 alias k=kubectl
 ```
 
 #### Cheat sheet and book
 
-Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. 
-Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
+Check out the official [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) which gives plenty of examples. Even better, brand new for Kubernetes 1.14, [kubectl has it's own gitbook](https://kubectl.docs.kubernetes.io/).
 
 #### Get a shell in a container
 
@@ -43,7 +42,7 @@ To run a shell in a _specific_ container in a pod use `-c`:
 kubectl exec -ti pod-name -c container-name bash
 ```
 
-You can use this with any *running* container. Indeed you can also use it with an `initContainer` if it's stuck.
+You can use this with any _running_ container. Indeed you can also use it with an `initContainer` if it's stuck.
 
 You can find the list of containers _viz._
 
@@ -97,7 +96,7 @@ Logs, metrics, and traces are called the three pillars of observability. The typ
 
 The simplest way to get started is to use the helm chart.
 
-The following instructions are taken from https://eksworkshop.com/monitoring/ which AWS vastly simplified yesterday (3rd April)!
+The following instructions are taken from [https://eksworkshop.com/monitoring/](https://eksworkshop.com/monitoring/) which AWS vastly simplified yesterday \(3rd April\)!
 
 ```bash
 kubectl create namespace prometheus
@@ -149,7 +148,7 @@ Then visit [http://localhost:9090](http://localhost:9090). This isn't a producti
 Grafana is already exposed as a LoadBalancer in this configuration. You can find the hostname via
 
 ```bash
-kubectl get svc -n grafana grafana -o json | grep hostname  
+kubectl get svc -n grafana grafana -o json | grep hostname
 ```
 
 #### Alfresco Content Services
@@ -158,7 +157,7 @@ ACS 6.1.0 exposes a Prometheus endpoint at `/alfresco/s/prometheus` and you can 
 
 A basic configuration for Prometheus to scrape Alfresco follows:
 
-```
+```text
   - job_name: 'alfresco'
 
     # Override the global default and scrape targets from this job every 5 seconds.
@@ -177,15 +176,13 @@ A basic configuration for Prometheus to scrape Alfresco follows:
 
 ### Prometheus: external to the cluster
 
-Deploying external to your cluster is simple and useful while developing. You can chain prometheus instances via
-[federation](https://prometheus.io/docs/prometheus/latest/federation/)
-so you could even take a mix+match approach to have in-cluster prometheus instances (per cluster), federated to an external instance.
+Deploying external to your cluster is simple and useful while developing. You can chain prometheus instances via [federation](https://prometheus.io/docs/prometheus/latest/federation/) so you could even take a mix+match approach to have in-cluster prometheus instances \(per cluster\), federated to an external instance.
 
-Grafana talks to Prometheus, but the configuration seems obtuse. Here's a working screenshot for grafana and prometheus installed on 
-the same server, but external to the cluster. (Note that Prometheus does not provide any authentication).
+Grafana talks to Prometheus, but the configuration seems obtuse. Here's a working screenshot for grafana and prometheus installed on the same server, but external to the cluster. \(Note that Prometheus does not provide any authentication\).
 
 ![](.gitbook/assets/grafana.png)
 
 #### Istio
 
 If you use istio service mesh, it comes with Promethueus, _et al._.
+
